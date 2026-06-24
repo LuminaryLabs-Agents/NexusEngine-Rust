@@ -1,0 +1,8 @@
+{
+  "id": "xr-house-demo",
+  "name": "NexusRealtime XR House Demo",
+  "target": "quest-openxr",
+  "entrySequence": "scene.sequence.json",
+  "kits": ["xr-input-kit", "xr-grab-throw-kit", "simple-rigid-body-kit", "toon-visual-kit", "sky-gradient-kit"],
+  "renderer": {"stereo": true, "toonBands": 4, "fallback": "android-canvas-demo"}
+}
