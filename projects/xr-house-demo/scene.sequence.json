@@ -1,0 +1,31 @@
+{
+  "id": "xr_house_scene",
+  "type": "flow",
+  "driver": "hybrid",
+  "children": [
+    {
+      "id": "setup_sky",
+      "type": "host-command",
+      "command": "set_sky_gradient",
+      "data": {"preset": "golden_horizon"}
+    },
+    {
+      "id": "spawn_house",
+      "type": "host-command",
+      "command": "spawn_model",
+      "data": {"id": "house", "mesh": "procedural-house", "position": [0, 0, -5], "material": "toon-house"}
+    },
+    {
+      "id": "spawn_props",
+      "type": "host-command",
+      "command": "spawn_grabbables",
+      "data": {
+        "objects": [
+          {"id": "blue-cube", "mesh": "cube", "position": [-0.5, 1.0, -2.2], "mass": 1.0},
+          {"id": "red-ball", "mesh": "sphere", "position": [0.4, 1.1, -2.0], "mass": 0.6},
+          {"id": "mug", "mesh": "mug", "position": [0.0, 1.0, -1.8], "mass": 0.4}
+        ]
+      }
+    }
+  ]
+}
