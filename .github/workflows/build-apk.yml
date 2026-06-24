@@ -23,6 +23,8 @@ jobs:
         with:
           targets: aarch64-linux-android
       - uses: android-actions/setup-android@v3
+      - name: Print build config
+        run: python3 -m json.tool build.json
       - name: Build APK
         run: make apk
       - uses: actions/upload-artifact@v4
