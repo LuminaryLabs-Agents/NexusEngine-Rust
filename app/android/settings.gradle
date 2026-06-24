@@ -1,0 +1,2 @@
+rootProject.name = 'NexusRealtimeRustHost'
+include ':app'
