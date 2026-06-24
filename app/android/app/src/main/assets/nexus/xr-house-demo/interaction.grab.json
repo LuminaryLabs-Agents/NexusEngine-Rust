@@ -1,0 +1,22 @@
+{
+  "schema": "nexus.xr-grab.v1",
+  "inputStream": {
+    "sample": "per-frame-before-tick",
+    "historyFrames": 8,
+    "releaseVelocity": "filtered-controller-pose-delta",
+    "haptics": "host-optional"
+  },
+  "grabbables": [
+    {"id": "blue-cube", "mode": "near-or-ray", "radius": 0.18, "mass": 1.0, "throwScale": 1.15},
+    {"id": "red-ball", "mode": "near-or-ray", "radius": 0.16, "mass": 0.6, "throwScale": 1.25},
+    {"id": "mug", "mode": "near-or-ray", "radius": 0.12, "mass": 0.4, "throwScale": 1.0}
+  ],
+  "events": [
+    "xr.grab.hover",
+    "xr.grab.started",
+    "xr.grab.moved",
+    "xr.grab.released",
+    "xr.throw.impulse",
+    "xr.haptics.requested"
+  ]
+}
