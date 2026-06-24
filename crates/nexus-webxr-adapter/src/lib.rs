@@ -116,11 +116,13 @@ impl WebXrHostCapabilities {
     }
 
     pub fn supports_request(&self, request: &WebXrSessionRequest) -> bool {
-        match request.mode {
+        let mode_supported = match request.mode {
             WebXrSessionMode::Inline => true,
             WebXrSessionMode::ImmersiveVr => self.supports_immersive_vr,
             WebXrSessionMode::ImmersiveAr => self.supports_immersive_ar,
-        } && (!request.requires_floor() || self.supports_local_floor)
+        };
+
+        mode_supported && (!request.requires_floor() || self.supports_local_floor)
     }
 }
 
