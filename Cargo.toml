@@ -5,7 +5,8 @@ members = [
   "crates/nexus-dsk-manifest",
   "crates/nexus-host",
   "crates/nexus-android-bridge",
-  "crates/nexus-quest-surface"
+  "crates/nexus-quest-surface",
+  "crates/nexus-adaptive-host"
 ]
 resolver = "2"
 
