@@ -1,0 +1,33 @@
+{
+  "schema": "nexus.adaptive-host.v1",
+  "defaultProfile": "android-canvas",
+  "profiles": [
+    {
+      "id": "android-canvas",
+      "mode": "android-canvas",
+      "stereo": false,
+      "swapchain": "not-required",
+      "input": "pointer-only",
+      "targetFrameRate": 60,
+      "renderScale": 1.0
+    },
+    {
+      "id": "stereo-panel",
+      "mode": "stereo-panel",
+      "stereo": true,
+      "swapchain": "optional-stereo-layer",
+      "input": "synthetic-stereo-hands",
+      "targetFrameRate": 72,
+      "renderScale": 0.85
+    },
+    {
+      "id": "quest-openxr",
+      "mode": "quest-openxr",
+      "stereo": true,
+      "swapchain": "required-open-xr-projection",
+      "input": "open-xr-actions",
+      "targetFrameRate": 72,
+      "renderScale": 1.0
+    }
+  ]
+}
