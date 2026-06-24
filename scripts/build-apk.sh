@@ -18,9 +18,15 @@ fi
 
 python3 - <<'PY'
 from pathlib import Path
+import os
+home = os.environ.get('ANDROID_HOME', '')
+if home:
+    p = Path(home) / 'build-tools' / '35.0.0' / 'aapt2'
+    if p.exists():
+        Path('app/android/gradle.properties').write_text('android.' + 'aapt2FromMavenOverride=' + str(p) + '\n')
 repo = 'reposito' + 'ries'
 plug = 'pluginManagement {\n    ' + repo + ' {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\n'
-deps = 'dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    ' + repo + ' {\n        google()\n        mavenCentral()\n    }\n}\n'
+deps = 'dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)\n    ' + repo + ' {\n        google()\n        mavenCentral()\n    }\n}\n'
 Path('app/android/settings.gradle').write_text(plug + '\n' + deps + '\nrootProject.name = \'NexusRealtimeRustHost\'\ninclude \':app\'\n')
 Path('app/android/init.gradle').write_text('allprojects {\n    ' + repo + ' {\n        google()\n        mavenCentral()\n    }\n}\n')
 app = Path('app/android/app/build.gradle')
@@ -36,3 +42,10 @@ cargo test --workspace
 cargo install cargo-ndk --locked
 cargo ndk -t arm64-v8a -o app/android/app/src/main/jniLibs build --release -p nexus-android-bridge
 (cd app/android && gradle --init-script init.gradle --no-daemon assembleDebug)
+
+APK_DIR="app/android/app/build/outputs/apk/debug"
+APK_PATH="${APK_DIR}/app-debug.apk"
+test -f "${APK_PATH}"
+echo "Built APK: ${APK_PATH}"
+ls -la "${APK_DIR}"
+unzip -l "${APK_PATH}" | grep -E "lib/arm64-v8a/libnexus_android_bridge.so|assets/nexus/xr-house-demo/project.json|assets/nexus/xr-house-demo/host.adaptive.json|assets/nexus/xr-house-demo/interaction.grab.json|AndroidManifest.xml"
