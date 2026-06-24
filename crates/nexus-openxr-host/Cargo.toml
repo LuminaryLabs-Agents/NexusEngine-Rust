@@ -1,0 +1,8 @@
+[package]
+name = "nexus-openxr-host"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+nexus-adaptive-host = { path = "../nexus-adaptive-host" }
+serde.workspace = true
