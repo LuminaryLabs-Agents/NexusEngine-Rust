@@ -12,6 +12,10 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 public class MainActivity extends Activity {
     static {
         System.loadLibrary("nexus_android_bridge");
@@ -23,22 +27,44 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String sequence = "{\"id\":\"xr_house_scene\",\"type\":\"flow\",\"children\":[{\"id\":\"setup_sky\",\"type\":\"host-command\",\"command\":\"set_sky_gradient\"},{\"id\":\"spawn_house\",\"type\":\"host-command\",\"command\":\"spawn_model\"},{\"id\":\"spawn_props\",\"type\":\"host-command\",\"command\":\"spawn_grabbables\"}]}";
-        String manifest = "{\"schema\":\"nexus.dsk-manifest.v1\",\"sources\":{\"core\":\"NexusRealtime\",\"protokits\":\"NexusRealtime-ProtoKits\"},\"kits\":[{\"id\":\"xr-input-kit\"},{\"id\":\"xr-grab-throw-kit\"},{\"id\":\"toon-visual-kit\"},{\"id\":\"sky-gradient-kit\"}]}";
+        String project = readAsset("nexus/xr-house-demo/project.json", "{}");
+        String sequence = readAsset("nexus/xr-house-demo/scene.sequence.json", "{\"id\":\"xr_house_scene\",\"type\":\"flow\",\"children\":[]}");
+        String manifest = readAsset("manifests/dsk-manifest.json", "{\"schema\":\"nexus.dsk-manifest.v1\",\"kits\":[]}");
+        String host = readAsset("nexus/xr-house-demo/host.adaptive.json", "{}");
+        String interaction = readAsset("nexus/xr-house-demo/interaction.grab.json", "{}");
         String status = nativeInit(sequence, manifest) + "\n" + nativeTick(0.016f);
-        setContentView(new HouseDemoView(this, status));
+        setContentView(new HouseDemoView(this, status, project, host, interaction));
+    }
+
+    private String readAsset(String path, String fallback) {
+        try (InputStream input = getAssets().open(path); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = input.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            return out.toString(StandardCharsets.UTF_8.name());
+        } catch (Exception ignored) {
+            return fallback;
+        }
     }
 
     static class HouseDemoView extends View {
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final String status;
+        private final String project;
+        private final String host;
+        private final String interaction;
         private float grabX = -1.0f;
         private float grabY = -1.0f;
         private boolean grabbing = false;
 
-        HouseDemoView(Activity activity, String status) {
+        HouseDemoView(Activity activity, String status, String project, String host, String interaction) {
             super(activity);
             this.status = status;
+            this.project = project;
+            this.host = host;
+            this.interaction = interaction;
             setFocusable(true);
         }
 
@@ -109,14 +135,10 @@ public class MainActivity extends Activity {
             float cubeY = grabbing ? grabY : y;
             outlineRect(c, cubeX - 38, cubeY - 38, cubeX + 38, cubeY + 38, 6.0f);
             celRect(c, cubeX - 38, cubeY - 38, cubeX + 38, cubeY + 38, Color.rgb(80, 126, 235));
-            float ballX = w * 0.65f;
-            float ballY = y + 10;
             paint.setColor(Color.rgb(28, 24, 24));
-            c.drawCircle(ballX, ballY, 47, paint);
+            c.drawCircle(w * 0.65f, y + 10, 47, paint);
             paint.setColor(Color.rgb(230, 90, 86));
-            c.drawCircle(ballX, ballY, 41, paint);
-            paint.setColor(Color.argb(95, 255, 255, 255));
-            c.drawCircle(ballX - 13, ballY - 16, 16, paint);
+            c.drawCircle(w * 0.65f, y + 10, 41, paint);
         }
 
         private void drawControllerHints(Canvas c, int w, int h) {
@@ -133,13 +155,14 @@ public class MainActivity extends Activity {
 
         private void drawHud(Canvas c, int w, int h) {
             paint.setColor(Color.argb(210, 10, 14, 24));
-            c.drawRoundRect(24, 22, w * 0.58f, 154, 18, 18, paint);
+            c.drawRoundRect(24, 22, w * 0.68f, 178, 18, 18, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(30.0f);
             c.drawText("NexusRealtime XR House Demo", 46, 62, paint);
-            paint.setTextSize(19.0f);
-            c.drawText("Quest APK shell • toon 4-band look • gradient sky • grab-ready props", 46, 95, paint);
-            c.drawText(status, 46, 128, paint);
+            paint.setTextSize(18.0f);
+            c.drawText("descriptor-driven fallback; project=" + project.contains("xr-house-demo"), 46, 94, paint);
+            c.drawText("adaptive host=" + host.contains("quest-openxr") + " grab kit=" + interaction.contains("blue-cube"), 46, 121, paint);
+            c.drawText(status, 46, 150, paint);
         }
 
         private void celRect(Canvas c, float l, float t, float r, float b, int color) {
