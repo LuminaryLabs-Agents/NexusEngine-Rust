@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-feature android:name="android.hardware.vr.headtracking" android:required="false" />
+    <uses-feature android:name="android.hardware.vr.headtracking" android:required="${headtrackingRequired}" />
 
-    <application android:label="NexusRealtime XR House" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+    <application android:label="${appLabel}" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         <activity
             android:name="dev.luminarylabs.nexusrealtime.MainActivity"
             android:exported="true"
