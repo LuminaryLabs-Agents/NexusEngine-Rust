@@ -1,15 +1,24 @@
 {
   "id": "xr-house-demo",
   "name": "NexusRealtime XR House Demo",
-  "target": "adaptive-xr",
+  "target": "webxr-adaptive-host",
   "entrySequence": "scene.sequence.json",
   "kits": [
+    "xr-session-kit",
+    "xr-frame-kit",
+    "xr-layer-kit",
+    "xr-render-descriptor-kit",
     "xr-input-kit",
     "xr-grab-throw-kit",
     "simple-rigid-body-kit",
     "toon-visual-kit",
     "sky-gradient-kit"
   ],
+  "webxr": {
+    "mode": "immersive-vr",
+    "requiredFeatures": ["local-floor"],
+    "optionalFeatures": ["hand-tracking", "anchors", "haptics"]
+  },
   "hostProfiles": [
     {
       "id": "android-canvas",
@@ -30,11 +39,14 @@
       "mode": "quest-openxr",
       "stereo": true,
       "swapchain": "required-open-xr-projection",
-      "input": "open-xr-actions"
+      "input": "open-xr-actions",
+      "backend": "vulkan"
     }
   ],
   "renderer": {
-    "mode": "adaptive-host-selected",
+    "mode": "descriptor-consumer",
+    "preferredBackend": "vulkan",
+    "fallbackBackend": "gles",
     "stereo": true,
     "toonBands": 4,
     "outline": "sigmoid-depth-normal",
