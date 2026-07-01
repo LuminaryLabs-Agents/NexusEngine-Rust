@@ -17,3 +17,6 @@ TBD from repo context and user request.
 - 2026-06-30 20:41:00 America/New_York - Retested `NexusEngineRustDemo.app`; app opened and displayed Rust backend status from `libnexus_host_ffi.dylib`.
 - 2026-06-30 20:41:00 America/New_York - Ran `make host-ffi`, YAML parse validation, local download-page generation, and GitHub Pages config check; all passed locally.
 - 2026-06-30 20:42:00 America/New_York - Removed formatting-only churn from existing Rust crates and added root `memory.md` for durable build-only repo conventions.
+- 2026-06-30 20:42:00 America/New_York - Committed and pushed `Build downloadable native artifacts` to `origin/main` as `32d0d29`.
+- 2026-06-30 20:50:00 America/New_York - GitHub Actions run `28485616343` passed all jobs and deployed Pages downloads.
+- 2026-06-30 20:50:00 America/New_York - Public download page, manifest, macOS app zip, macOS/Linux/Windows FFI zips, and Android APK zip all returned HTTP 200.
