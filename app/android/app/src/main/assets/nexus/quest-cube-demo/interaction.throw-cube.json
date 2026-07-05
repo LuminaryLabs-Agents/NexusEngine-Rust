@@ -1,0 +1,23 @@
+{
+  "schema": "nexus.quest-throw-cube.v1",
+  "owner": "quest-xr-frame-loop-kit",
+  "input": {
+    "locomotion": "left-thumbstick",
+    "grab": "right-grip",
+    "throw": "right-controller-release-velocity",
+    "reset": ["A", "Start", "keyboard-r", "reset-button"]
+  },
+  "cube": {
+    "id": "throw-reset-cube",
+    "startPosition": [0, 1.2, -2.15],
+    "resetBelowY": -1.25,
+    "grabRadius": 0.58,
+    "throwScale": 2.8
+  },
+  "events": [
+    "quest.cube.grabbed",
+    "quest.cube.thrown",
+    "quest.cube.reset",
+    "quest.player.locomotion"
+  ]
+}

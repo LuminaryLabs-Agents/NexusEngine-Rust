@@ -1,0 +1,14 @@
+{
+  "name": "Default Rust Project",
+  "appId": "dev.luminarylabs.nexuspackaged.defaultrustproject",
+  "entry": "index.html",
+  "kind": "static-html",
+  "targets": ["web-static", "electron", "macos-app"],
+  "assetBase": "./",
+  "kitFiles": [
+    {
+      "source": "../../local-kits/primitive-cube-object-kit.mjs",
+      "dest": "kits/primitive-cube-object-kit.mjs"
+    }
+  ]
+}

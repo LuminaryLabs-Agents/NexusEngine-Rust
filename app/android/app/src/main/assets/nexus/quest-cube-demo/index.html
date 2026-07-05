@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NexusRealtime Quest Cube Demo</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05070c;
+      color: #f7f7f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #quest-canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      touch-action: none;
+    }
+
+    #hud {
+      position: fixed;
+      left: 14px;
+      bottom: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    button {
+      pointer-events: auto;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: rgba(8, 10, 16, 0.76);
+      color: white;
+      min-height: 38px;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+
+    #status {
+      max-width: min(64vw, 760px);
+      padding: 8px 10px;
+      background: rgba(8, 10, 16, 0.68);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="quest-canvas"></canvas>
+  <div id="hud">
+    <button id="enter-xr" type="button">Enter XR</button>
+    <button id="reset-cube" type="button">Reset</button>
+    <div id="status">starting</div>
+  </div>
+  <script type="module">
+    import { createQuestXrFrameLoop } from "./quest-xr-frame-loop-kit.mjs";
+
+    const canvas = document.getElementById("quest-canvas");
+    const status = document.getElementById("status");
+    const nativeBridge = window.NexusNative ?? null;
+    const loop = createQuestXrFrameLoop({
+      canvas,
+      nativeBridge,
+      log: (message) => console.log(message)
+    });
+
+    const nativeInit = nativeBridge?.initStatus?.() ?? "native bridge unavailable";
+    const nativeXr = nativeBridge?.openXrStatus?.() ?? "openxr bridge unavailable";
+    status.textContent = `${nativeInit} | ${nativeXr}`;
+
+    loop.start();
+
+    document.getElementById("reset-cube").addEventListener("click", () => {
+      loop.inputBridge.setButton("reset", true);
+      requestAnimationFrame(() => loop.inputBridge.setButton("reset", false));
+    });
+
+    document.getElementById("enter-xr").addEventListener("click", async () => {
+      const result = await loop.startWebXrSession();
+      status.textContent = `${result.ok ? "XR started" : "XR fallback"}: ${result.reason}`;
+      nativeBridge?.log?.(`enter-xr ${JSON.stringify(result)}`);
+    });
+
+    window.addEventListener("error", (event) => {
+      const message = `quest-js-error ${event.message}`;
+      status.textContent = message;
+      nativeBridge?.log?.(message);
+    });
+  </script>
+</body>
+</html>

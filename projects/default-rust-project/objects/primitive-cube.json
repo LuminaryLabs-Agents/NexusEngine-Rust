@@ -1,0 +1,16 @@
+{
+  "schema": "nexus.primitive-cube-object.v1",
+  "id": "default-rust-cube",
+  "label": "Default Rust Cube",
+  "size": 1.15,
+  "position": [0, 0, 0],
+  "rotation": [0, 18, 0],
+  "spinAxis": [0, 1, 0],
+  "angularVelocity": 36,
+  "material": {
+    "color": "#4f8cff",
+    "edgeColor": "#10213f",
+    "highlightColor": "#d8e7ff",
+    "sideColor": "#2d5bb7"
+  }
+}

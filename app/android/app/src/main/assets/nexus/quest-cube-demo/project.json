@@ -1,0 +1,19 @@
+{
+  "id": "quest-cube-demo",
+  "name": "NexusRealtime Quest Cube Demo",
+  "target": "quest-openxr-js-frame-loop",
+  "entry": "index.html",
+  "entrySequence": "scene.sequence.json",
+  "runtime": "quest-xr-frame-loop-kit",
+  "webxr": {
+    "mode": "immersive-vr",
+    "requiredFeatures": ["local-floor"],
+    "optionalFeatures": ["hand-tracking", "anchors", "layers", "haptics"]
+  },
+  "renderer": {
+    "mode": "js-kit-stereo-renderer",
+    "stereo": true,
+    "fallback": "side-by-side-stereo-canvas",
+    "projectionSource": "webxr-when-available"
+  }
+}

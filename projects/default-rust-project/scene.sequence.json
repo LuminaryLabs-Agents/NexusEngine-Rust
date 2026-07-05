@@ -1,0 +1,24 @@
+{
+  "schema": "nexus.sequence.v1",
+  "id": "default_rust_project_boot",
+  "type": "flow",
+  "children": [
+    {
+      "id": "load_primitive_cube_kit",
+      "type": "compose-kit",
+      "kit": "primitive-cube-object-kit",
+      "data": {
+        "descriptor": "objects/primitive-cube.json"
+      }
+    },
+    {
+      "id": "show_single_cube",
+      "type": "host-command",
+      "command": "render_static_cube_canvas",
+      "data": {
+        "object": "default-rust-cube",
+        "visualShell": "index.html"
+      }
+    }
+  ]
+}

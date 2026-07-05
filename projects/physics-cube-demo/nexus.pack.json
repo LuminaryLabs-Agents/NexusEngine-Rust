@@ -1,0 +1,18 @@
+{
+  "name": "Physics Cube Demo",
+  "appId": "dev.luminarylabs.nexuspackaged.physicscubedemo",
+  "entry": "index.html",
+  "kind": "static-html",
+  "targets": ["web-static", "electron", "macos-app"],
+  "assetBase": "./",
+  "kitFiles": [
+    {
+      "source": "../../local-kits/primitive-cube-object-kit.mjs",
+      "dest": "kits/primitive-cube-object-kit.mjs"
+    },
+    {
+      "source": "../../local-kits/physics-cube-object-kit.mjs",
+      "dest": "kits/physics-cube-object-kit.mjs"
+    }
+  ]
+}

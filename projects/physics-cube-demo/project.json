@@ -1,0 +1,16 @@
+{
+  "schema": "nexus.physics-cube-demo.v1",
+  "id": "physics-cube-demo",
+  "name": "Physics Cube Demo",
+  "entry": "index.html",
+  "composition": {
+    "kits": ["primitive-cube-object-kit", "physics-cube-object-kit"],
+    "objects": ["objects/physics-cube.json"],
+    "sequence": "scene.sequence.json"
+  },
+  "validation": {
+    "snapshotGlobal": "window.NexusCubeApp.snapshot()",
+    "expectedCubeId": "physics-cube",
+    "requireMeshWinding": true
+  }
+}

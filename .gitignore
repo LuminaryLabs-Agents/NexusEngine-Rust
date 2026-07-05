@@ -1,9 +1,15 @@
 target/
 .gradle/
 build/
+.playwright-cli/
 app/android/.gradle/
+app/android/gradle.properties
+app/android/init.gradle
 app/android/app/build/
 app/android/app/src/main/jniLibs/
+app/android/app/src/main/assets/nexus/quest-cube-demo/quest-xr-frame-loop-kit.mjs
 generated/*.json
+output/
+vendor/
 .DS_Store
 dist/

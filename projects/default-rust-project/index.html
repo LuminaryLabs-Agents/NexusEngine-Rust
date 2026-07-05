@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Default Rust Project</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0a0d12;
+      color: #f6f8fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, #17243a 0%, #0c1119 52%, #0a0d12 100%);
+    }
+
+    main {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    header,
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 58px;
+      padding: 12px 18px;
+      background: rgba(7, 10, 16, 0.72);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    button {
+      min-width: 88px;
+      height: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: #f7f8fb;
+      color: #0d1117;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #status,
+    #summary {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #c9d6e4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Default Rust Project</h1>
+      <button id="reset-cube" type="button">Reset</button>
+    </header>
+    <canvas id="cube-canvas" aria-label="Primitive cube render"></canvas>
+    <footer>
+      <div id="status">loading data composition</div>
+      <div id="summary">snapshot pending</div>
+    </footer>
+  </main>
+
+  <script type="module">
+    import {
+      createPrimitiveCubeMesh,
+      createPrimitiveCubeState,
+      snapshotPrimitiveCube,
+      tickPrimitiveCube
+    } from "./kits/primitive-cube-object-kit.mjs";
+
+    const fallbackDescriptor = {
+      id: "default-rust-cube",
+      label: "Default Rust Cube",
+      size: 1.15,
+      position: [0, 0, 0],
+      rotation: [0, 18, 0],
+      spinAxis: [0, 1, 0],
+      angularVelocity: 36,
+      material: {
+        color: "#4f8cff",
+        edgeColor: "#10213f",
+        highlightColor: "#d8e7ff",
+        sideColor: "#2d5bb7"
+      }
+    };
+
+    const canvas = document.getElementById("cube-canvas");
+    const ctx = canvas.getContext("2d", { alpha: false });
+    const status = document.getElementById("status");
+    const summary = document.getElementById("summary");
+    let state = createPrimitiveCubeState(fallbackDescriptor);
+    let latestSnapshot = snapshotPrimitiveCube(state);
+    let latestRenderProof = null;
+    let resetRequested = false;
+    let lastTime = 0;
+
+    window.NexusCubeApp = {
+      ready: false,
+      snapshot: () => ({ ...latestSnapshot, render: latestRenderProof }),
+      reset: () => {
+        resetRequested = true;
+      }
+    };
+
+    async function loadJson(path, fallback) {
+      try {
+        const response = await fetch(path, { cache: "no-store" });
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        return await response.json();
+      } catch (error) {
+        status.textContent = `using fallback descriptor: ${error.message}`;
+        return fallback;
+      }
+    }
+
+    function resize() {
+      const ratio = Math.max(1, window.devicePixelRatio || 1);
+      const width = Math.max(640, Math.floor(canvas.clientWidth * ratio));
+      const height = Math.max(360, Math.floor(canvas.clientHeight * ratio));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+    }
+
+    function polygon(points, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (const point of points.slice(1)) ctx.lineTo(point[0], point[1]);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function polygonArea(points) {
+      let area = 0;
+      for (let index = 0; index < points.length; index += 1) {
+        const current = points[index];
+        const next = points[(index + 1) % points.length];
+        area += current[0] * next[1] - next[0] * current[1];
+      }
+      return area / 2;
+    }
+
+    function rotateY(vertex, angle) {
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      return [
+        vertex[0] * cos - vertex[2] * sin,
+        vertex[1],
+        vertex[0] * sin + vertex[2] * cos
+      ];
+    }
+
+    function faceFill(face, material) {
+      if (face.materialSlot === "top") return material.highlightColor;
+      if (face.materialSlot === "front") return material.color;
+      return material.sideColor;
+    }
+
+    function buildCubeRender(snapshot, centerX, centerY, scale) {
+      const mesh = snapshot.cube.mesh || createPrimitiveCubeMesh(snapshot.cube.size);
+      const angle = snapshot.cube.rotation[1] * Math.PI / 180;
+      const facingFront = Math.cos(angle) >= 0;
+      const sideFace = Math.sin(angle) >= 0 ? "right" : "left";
+      const depthFace = facingFront ? "front" : "back";
+      const faceOrder = ["top", sideFace, depthFace];
+      const faceByName = new Map(mesh.faces.map((face) => [face.name, face]));
+      const vertices = mesh.vertices.map((vertex) => rotateY(vertex, angle));
+
+      const faces = faceOrder
+        .map((name) => faceByName.get(name))
+        .filter(Boolean)
+        .map((face) => {
+          const points = face.vertices.map((vertexIndex) => {
+            const vertex = vertices[vertexIndex];
+            return [
+              centerX + vertex[0] * scale + vertex[2] * scale * 0.34,
+              centerY - vertex[1] * scale + vertex[2] * scale * 0.28
+            ];
+          });
+          return { face, points, area: Math.abs(polygonArea(points)) };
+        });
+
+      return {
+        faces,
+        proof: {
+          schema: "nexus.cube-render-proof.v1",
+          meshSource: mesh.schema,
+          meshWindingValid: mesh.windingValidation?.valid === true,
+          meshCheckedTriangles: mesh.windingValidation?.checkedTriangles || 0,
+          drawnFaces: faces.map(({ face }) => face.name),
+          faceAreas: Object.fromEntries(faces.map(({ face, area }) => [face.name, Number(area.toFixed(2))])),
+          minimumFaceArea: Number(Math.min(...faces.map(({ area }) => area)).toFixed(2))
+        }
+      };
+    }
+
+    function drawCube(snapshot) {
+      resize();
+      const width = canvas.width;
+      const height = canvas.height;
+      const centerX = width / 2;
+      const centerY = height * 0.52;
+      const scale = Math.min(width, height) * 0.18;
+
+      ctx.fillStyle = "#0a0d12";
+      ctx.fillRect(0, 0, width, height);
+
+      const horizon = ctx.createLinearGradient(0, 0, 0, height);
+      horizon.addColorStop(0, "#1d3557");
+      horizon.addColorStop(0.54, "#314b66");
+      horizon.addColorStop(0.55, "#172316");
+      horizon.addColorStop(1, "#0d130f");
+      ctx.fillStyle = horizon;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = "rgba(210,230,255,0.14)";
+      ctx.lineWidth = 2;
+      for (let i = -5; i <= 5; i += 1) {
+        ctx.beginPath();
+        ctx.moveTo(centerX + i * scale * 0.32, height * 0.56);
+        ctx.lineTo(centerX + i * scale * 0.88, height);
+        ctx.stroke();
+      }
+
+      const render = buildCubeRender(snapshot, centerX, centerY, scale);
+      const { edgeColor } = snapshot.cube.material;
+      for (const { face, points } of render.faces) {
+        polygon(points, faceFill(face, snapshot.cube.material), edgeColor);
+      }
+
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      const frontFace = render.faces.find(({ face }) => face.name === "front");
+      if (frontFace) {
+        const left = Math.min(...frontFace.points.map((point) => point[0]));
+        const top = Math.min(...frontFace.points.map((point) => point[1]));
+        const width = Math.max(...frontFace.points.map((point) => point[0])) - left;
+        const height = Math.max(...frontFace.points.map((point) => point[1])) - top;
+        ctx.fillRect(left + 12, top + 12, width * 0.46, height * 0.12);
+      }
+
+      return render.proof;
+    }
+
+    function frame(time) {
+      const dt = lastTime ? (time - lastTime) / 1000 : 1 / 60;
+      lastTime = time;
+      latestSnapshot = tickPrimitiveCube(state, resetRequested ? { reset: true, reason: "button-reset" } : {}, dt);
+      resetRequested = false;
+      latestRenderProof = drawCube(latestSnapshot);
+      summary.textContent = latestSnapshot.summary;
+      requestAnimationFrame(frame);
+    }
+
+    document.getElementById("reset-cube").addEventListener("click", () => {
+      resetRequested = true;
+    });
+
+    const descriptor = await loadJson("./objects/primitive-cube.json", fallbackDescriptor);
+    state = createPrimitiveCubeState(descriptor);
+    latestSnapshot = snapshotPrimitiveCube(state);
+    window.NexusCubeApp.ready = true;
+    status.textContent = "data composition ready: primitive-cube-object-kit + objects/primitive-cube.json";
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

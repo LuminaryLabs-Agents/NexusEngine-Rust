@@ -1,0 +1,16 @@
+{
+  "schema": "nexus.default-rust-project.v1",
+  "id": "default-rust-project",
+  "name": "Default Rust Project",
+  "entry": "index.html",
+  "composition": {
+    "kits": ["primitive-cube-object-kit"],
+    "objects": ["objects/primitive-cube.json"],
+    "sequence": "scene.sequence.json"
+  },
+  "validation": {
+    "snapshotGlobal": "window.NexusCubeApp.snapshot()",
+    "expectedCubeId": "default-rust-cube",
+    "requireMeshWinding": true
+  }
+}

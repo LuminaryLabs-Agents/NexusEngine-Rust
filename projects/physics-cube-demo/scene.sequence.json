@@ -1,0 +1,25 @@
+{
+  "schema": "nexus.sequence.v1",
+  "id": "physics_cube_demo_boot",
+  "type": "flow",
+  "children": [
+    {
+      "id": "compose_physics_cube",
+      "type": "compose-kit",
+      "kit": "physics-cube-object-kit",
+      "data": {
+        "descriptor": "objects/physics-cube.json",
+        "requires": ["primitive-cube-object-kit"]
+      }
+    },
+    {
+      "id": "show_physics_cube_canvas",
+      "type": "host-command",
+      "command": "render_physics_cube_canvas",
+      "data": {
+        "object": "physics-cube",
+        "visualShell": "index.html"
+      }
+    }
+  ]
+}

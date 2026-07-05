@@ -7,7 +7,7 @@ use std::env;
 use std::ffi::OsStr;
 use std::fs::{self, File};
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::process::{Command, ExitStatus, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 use zip::write::SimpleFileOptions;
@@ -34,6 +34,14 @@ struct PackConfig {
     web_out_dir: Option<String>,
     targets: Option<Vec<String>>,
     asset_base: Option<String>,
+    kit_files: Option<Vec<KitFileConfig>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct KitFileConfig {
+    source: String,
+    dest: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -442,6 +450,7 @@ fn build_project(path: &Path, out: &Path, requested_targets: Vec<String>) -> Res
 
     let mut warnings = context.inspection.warnings.clone();
     let build_command = normalize_web_bundle(&context, &mut warnings)?;
+    copy_configured_kit_files(&context, &mut warnings)?;
     if !context.web_dir.join("index.html").is_file() {
         bail!(
             "normalized web bundle is missing index.html: {}",
@@ -584,6 +593,77 @@ fn normalize_web_bundle(
     }
 
     bail!("could not produce a web bundle from the input project")
+}
+
+fn copy_configured_kit_files(context: &BuildContext, warnings: &mut Vec<String>) -> Result<()> {
+    let config = read_pack_config(Path::new(&context.inspection.source_path))?;
+    let Some(kit_files) = config.kit_files else {
+        return Ok(());
+    };
+
+    let project_root = Path::new(&context.inspection.source_path);
+    let repo_root = env::current_dir()?;
+    for kit_file in kit_files {
+        let source = resolve_kit_source(project_root, &repo_root, &kit_file.source)?;
+        let dest = safe_bundle_dest(&context.web_dir, &kit_file.dest)?;
+        if let Some(parent) = dest.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::copy(&source, &dest).with_context(|| {
+            format!(
+                "failed to copy kit file {} to {}",
+                source.display(),
+                dest.display()
+            )
+        })?;
+        warnings.push(format!(
+            "copied kit file {} into {}",
+            Path::new(&kit_file.source)
+                .file_name()
+                .and_then(OsStr::to_str)
+                .unwrap_or("kit-file"),
+            kit_file.dest
+        ));
+    }
+    Ok(())
+}
+
+fn resolve_kit_source(project_root: &Path, repo_root: &Path, source: &str) -> Result<PathBuf> {
+    let raw = Path::new(source);
+    let candidates = if raw.is_absolute() {
+        vec![raw.to_path_buf()]
+    } else {
+        vec![project_root.join(raw), repo_root.join(raw)]
+    };
+
+    for candidate in candidates {
+        if candidate.is_file() {
+            return fs::canonicalize(&candidate)
+                .with_context(|| format!("failed to resolve kit file {}", candidate.display()));
+        }
+    }
+
+    bail!(
+        "kitFiles source was not found from project root or repo root: {}",
+        source
+    )
+}
+
+fn safe_bundle_dest(web_dir: &Path, dest: &str) -> Result<PathBuf> {
+    if dest.trim().is_empty() {
+        bail!("kitFiles dest must not be empty");
+    }
+    let raw = Path::new(dest);
+    if raw.is_absolute() {
+        bail!("kitFiles dest must be relative: {dest}");
+    }
+    for component in raw.components() {
+        match component {
+            Component::Normal(_) | Component::CurDir => {}
+            _ => bail!("kitFiles dest must stay inside the web bundle: {dest}"),
+        }
+    }
+    Ok(web_dir.join(raw))
 }
 
 fn run_npm_install(dir: &Path, warnings: &mut Vec<String>) -> Result<bool> {
@@ -920,4 +1000,17 @@ fn print_json<T: Serialize>(value: &T) -> Result<()> {
     serde_json::to_writer_pretty(&mut lock, value)?;
     writeln!(&mut lock)?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn safe_bundle_dest_rejects_paths_outside_bundle() {
+        let root = Path::new("/tmp/nexus-web");
+        assert!(safe_bundle_dest(root, "kits/cube.mjs").is_ok());
+        assert!(safe_bundle_dest(root, "../cube.mjs").is_err());
+        assert!(safe_bundle_dest(root, "/tmp/cube.mjs").is_err());
+    }
 }

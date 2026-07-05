@@ -1,21 +1,41 @@
 {
   "schema": "nexus.dsk-manifest.v1",
   "sources": {
-    "core": "LuminaryLabs-Dev/NexusRealtime",
-    "protokits": "LuminaryLabs-Agents/NexusRealtime-ProtoKits"
+    "local-kits": "NexusEngine-Rust/local-kits",
+    "runtime": "APK assets"
   },
   "kits": [
     {
-      "id": "core:createEngine",
-      "name": "createEngine",
-      "kind": "core-export",
-      "rust_support": "manifest-only"
+      "id": "quest-xr-frame-loop-kit",
+      "kind": "js-runtime-kit",
+      "rust_support": "host-lifecycle-only"
     },
     {
-      "id": "n:quest-smoke",
-      "name": "quest-smoke",
-      "kind": "rust-sequence",
-      "rust_support": "native"
+      "id": "xr-session-kit"
+    },
+    {
+      "id": "xr-frame-kit"
+    },
+    {
+      "id": "xr-layer-kit"
+    },
+    {
+      "id": "xr-render-descriptor-kit"
+    },
+    {
+      "id": "xr-input-kit"
+    },
+    {
+      "id": "xr-grab-throw-kit"
+    },
+    {
+      "id": "simple-rigid-body-kit"
+    },
+    {
+      "id": "toon-visual-kit"
+    },
+    {
+      "id": "sky-gradient-kit"
     }
   ]
 }

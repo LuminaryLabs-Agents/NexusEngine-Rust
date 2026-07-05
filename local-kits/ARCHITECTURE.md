@@ -18,9 +18,14 @@ Host domains
   openxr-session-domain-kit
   headless-replay-domain-kit
         ↓
+Portable proof domains
+  primitive-cube-object-kit
+  physics-cube-object-kit
+        ↓
 Presentation and artifact domains
   gles-render-domain-kit
   stereo-render-domain-kit
+  quest-xr-frame-loop-kit (JS runtime kit)
   build-artifact-log-domain-kit
 ```
 
@@ -31,6 +36,8 @@ Multiple hosts, not multiple gameplay engines.
 ```
 
 The Rust host kernel composes native host domains. It does not own gameplay truth.
+
+For Quest demo work, keep as much of the XR/OpenXR-compatible frame loop as possible in JS kits. Rust should stay close to lifecycle, JNI status, native build surfaces, and future low-level adapters that cannot reasonably live in JS.
 
 ## Domain categories
 
@@ -64,6 +71,16 @@ These domains consume command buffers and descriptors:
 ```txt
 gles-render-domain-kit
 stereo-render-domain-kit
+quest-xr-frame-loop-kit
+```
+
+### Portable proof domains
+
+These domains own small reusable state proofs without owning platform or renderer behavior:
+
+```txt
+primitive-cube-object-kit (state + mesh/winding metadata)
+physics-cube-object-kit
 ```
 
 ### Validation / artifact domains

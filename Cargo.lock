@@ -318,6 +318,7 @@ version = "0.1.0"
 dependencies = [
  "nexus-adaptive-host",
  "nexus-webxr-adapter",
+ "nexus-xr-input",
  "serde",
 ]
 

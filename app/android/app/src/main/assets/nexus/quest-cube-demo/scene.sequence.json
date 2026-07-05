@@ -1,0 +1,26 @@
+{
+  "id": "quest_cube_scene",
+  "type": "flow",
+  "children": [
+    {
+      "id": "setup_stereo_frame_loop",
+      "type": "host-command",
+      "command": "use_js_quest_xr_frame_loop",
+      "data": {
+        "kit": "quest-xr-frame-loop-kit",
+        "stereo": true,
+        "referenceSpace": "local-floor"
+      }
+    },
+    {
+      "id": "spawn_throw_cube",
+      "type": "host-command",
+      "command": "spawn_grabbable_cube",
+      "data": {
+        "id": "throw-reset-cube",
+        "position": [0, 1.2, -2.15],
+        "reset": "when-below-plane-or-reset-input"
+      }
+    }
+  ]
+}

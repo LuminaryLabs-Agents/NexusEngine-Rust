@@ -1,7 +1,7 @@
 {
   "schema": "nexusrealtime-rust.build.v1",
   "app": {
-    "name": "NexusRealtime XR House",
+    "name": "NexusRealtime Quest Cube",
     "namespace": "dev.luminarylabs.nexusrealtime",
     "applicationId": "dev.luminarylabs.nexusrealtime.rust",
     "versionCode": 1,
@@ -34,10 +34,10 @@
     "msaa": 2
   },
   "project": {
-    "id": "xr-house-demo",
-    "assetRoot": "assets/nexus/xr-house-demo",
+    "id": "quest-cube-demo",
+    "assetRoot": "assets/nexus/quest-cube-demo",
     "entrySequence": "scene.sequence.json",
-    "runtime": "nexus-webxr-adapter"
+    "runtime": "quest-xr-frame-loop-kit"
   },
   "repos": {
     "core": "https://github.com/LuminaryLabs-Dev/NexusRealtime.git",
@@ -57,9 +57,11 @@
     "requiredApkEntries": [
       "AndroidManifest.xml",
       "lib/arm64-v8a/libnexus_android_bridge.so",
-      "assets/nexus/xr-house-demo/project.json",
-      "assets/nexus/xr-house-demo/host.adaptive.json",
-      "assets/nexus/xr-house-demo/interaction.grab.json"
+      "assets/nexus/quest-cube-demo/index.html",
+      "assets/nexus/quest-cube-demo/quest-xr-frame-loop-kit.mjs",
+      "assets/nexus/quest-cube-demo/project.json",
+      "assets/nexus/quest-cube-demo/host.adaptive.json",
+      "assets/nexus/quest-cube-demo/interaction.throw-cube.json"
     ]
   }
 }

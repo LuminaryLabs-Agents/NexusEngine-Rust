@@ -28,3 +28,11 @@ TBD from repo context and user request.
 - 2026-07-01 00:00:00 America/New_York - Launched generated GoldRush macOS `.app`; visible screenshot proof showed the GoldRush 3D scene rendering in the packaged app.
 - 2026-07-01 00:00:00 America/New_York - First pushed packager workflow showed Windows-only GoldRush clone failures; added sparse clone helper with `core.longpaths` and build-needed checkout exclusions for retry.
 - 2026-07-01 00:00:00 America/New_York - Second pushed packager workflow reached Windows Electron packaging but failed to resolve `npm`; patched Rust packager and Electron wrapper to use `npm.cmd`/`npx.cmd` on Windows.
+- 2026-07-01 02:16:15 America/New_York - Updated `.agent` and README north-star wording so long-term packager intention guides future work over time.
+- 2026-07-01 05:04:29 America/New_York - Added Quest JS frame-loop goal tracking; Quest demo behavior should live in JS kits with Rust kept as thin host/JNI glue.
+- 2026-07-01 05:15:10 America/New_York - Verified `make quest-apk` builds locally and Playwright renders the Quest stereo JS kit; ADB device proof remains blocked by unauthorized device `340YC10G750FT1`.
+- 2026-07-01 05:17:41 America/New_York - Re-ran `make adb-quest-check`; device `340YC10G750FT1` still reports `unauthorized`, so install/launch/logcat proof needs headset-side USB debugging approval.
+- 2026-07-04 06:13:06 America/New_York - Added default Rust cube project goal tracking for a `primitive-cube-object-kit`, `projects/default-rust-project`, `kitFiles` packaging, and Electron/macOS app validation before headset bare-metal work.
+- 2026-07-04 06:19:00 America/New_York - Added `docs/HEADSET_BARE_METAL_TRACK.md` to keep Armada/Linux headset work gated behind stock OS app proof, hardware facts, backups, and recoverability.
+- 2026-07-04 06:52:36 America/New_York - Added physics cube demo goal tracking for `physics-cube-object-kit`, `projects/physics-cube-demo`, and packaged Electron/macOS visual validation.
+- 2026-07-05 00:00:00 America/New_York - Promoted shared cube mesh vertices/faces/triangle winding into `primitive-cube-object-kit` and made both cube demos render from that kit mesh with Electron render proof.

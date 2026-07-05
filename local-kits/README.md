@@ -43,6 +43,9 @@ No platform domain owns gameplay truth.
 | `xr-interaction-domain-kit` | XR interaction detector | Owns low-level XR candidate interaction events without owning gameplay outcomes. |
 | `gles-render-domain-kit` | GLES presentation | Owns GLES command-buffer presentation contracts. |
 | `stereo-render-domain-kit` | Stereo presentation | Owns stereo projection/layer presentation contracts. |
+| `primitive-cube-object-kit` | Reusable object state and mesh | Owns primitive cube descriptor normalization, deterministic tick/reset behavior, shared vertices/faces/triangle winding, and snapshots without owning rendering or host packaging. |
+| `physics-cube-object-kit` | Reusable physics state | Composes primitive cube state with velocity, gravity, floor collision, restitution, damping, reset, impulse, and snapshots without owning rendering or host packaging. |
+| `quest-xr-frame-loop-kit` | JS runtime kit | Owns the Quest cube demo frame loop, stereo frame packet, controller tracking packet, left-stick locomotion, cube throw, reset, and snapshot behavior while keeping Rust host code thin. |
 | `headless-replay-domain-kit` | CI/headless host | Owns replay, deterministic host validation, and CI smoke execution. |
 | `build-artifact-log-domain-kit` | Build logs/artifacts | Owns build result reports, artifact manifests, hashes, and Discord-safe summaries. |
 
@@ -52,16 +55,25 @@ No platform domain owns gameplay truth.
 local-kits/
 ├─ README.md
 ├─ native-host-domain-kits.mjs
+├─ primitive-cube-object-kit.mjs
+├─ physics-cube-object-kit.mjs
+├─ quest-xr-frame-loop-kit.mjs
 ├─ examples/
 │  └─ native-host-composition.mjs
 └─ tests/
-   └─ native-host-domain-kits.test.mjs
+   ├─ native-host-domain-kits.test.mjs
+   ├─ primitive-cube-object-kit.test.mjs
+   ├─ physics-cube-object-kit.test.mjs
+   └─ quest-xr-frame-loop-kit.test.mjs
 ```
 
 ## Run the local kit smoke test
 
 ```bash
 node local-kits/tests/native-host-domain-kits.test.mjs
+node local-kits/tests/primitive-cube-object-kit.test.mjs
+node local-kits/tests/physics-cube-object-kit.test.mjs
+node local-kits/tests/quest-xr-frame-loop-kit.test.mjs
 ```
 
 ## Run the composition example
@@ -88,4 +100,4 @@ NexusRealtime-Rust crates
 
 ## Non-goals
 
-These local kits do not implement a production OpenXR runtime, Android APK build, GLES renderer, or gameplay simulation. They define the domain contract skeletons that those implementations should obey.
+These local kits do not implement a production OpenXR runtime, Android APK build, or GLES renderer. The primitive cube mesh describes reusable geometry and winding only; canvas/WebView projection remains in demo shells. The Quest cube JS kit is an experimental runtime proof for frame-loop shape, input packets, throw/reset state, and stereo snapshots; it should stay small until it is ready to move into ProtoKits or a promoted NexusRealtime runtime contract.

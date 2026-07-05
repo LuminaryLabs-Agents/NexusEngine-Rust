@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - name: Test workspace
-        run: cargo test --workspace
+        run: make test
 
   host-ffi:
     name: Host FFI (${{ matrix.name }})
@@ -137,6 +137,126 @@ jobs:
           name: nexusengine-goldrush-web-static
           path: |
             dist/packager/artifacts/web-static/
+            dist/packager/packages/*/nexus-package-manifest.json
+
+  package-default-rust-project-web-static:
+    name: Package Default Rust Project web-static
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Package default project web-static
+        shell: bash
+        run: STRICT=1 TARGETS=web-static PROJECT=projects/default-rust-project bash scripts/package-nexus-project.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusengine-default-rust-project-web-static
+          path: |
+            dist/packager/artifacts/web-static/
+            dist/packager/packages/*/nexus-package-manifest.json
+
+  package-default-rust-project-macos-app:
+    name: Package Default Rust Project macOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Package default project macOS app
+        shell: bash
+        run: STRICT=1 TARGETS=macos-app PROJECT=projects/default-rust-project bash scripts/package-nexus-project.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusengine-default-rust-project-macos-app
+          path: |
+            dist/packager/artifacts/macos-app/
+            dist/packager/packages/*/nexus-package-manifest.json
+
+  package-default-rust-project-electron-mac:
+    name: Package Default Rust Project Electron macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Package default project Electron macOS
+        shell: bash
+        run: STRICT=1 TARGETS=electron-mac PROJECT=projects/default-rust-project bash scripts/package-nexus-project.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusengine-default-rust-project-electron-mac
+          path: |
+            dist/packager/artifacts/electron-mac/
+            dist/packager/packages/*/nexus-package-manifest.json
+
+  package-physics-cube-demo-web-static:
+    name: Package Physics Cube Demo web-static
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Package physics cube demo web-static
+        shell: bash
+        run: STRICT=1 TARGETS=web-static PROJECT=projects/physics-cube-demo bash scripts/package-nexus-project.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusengine-physics-cube-demo-web-static
+          path: |
+            dist/packager/artifacts/web-static/
+            dist/packager/packages/*/nexus-package-manifest.json
+
+  package-physics-cube-demo-macos-app:
+    name: Package Physics Cube Demo macOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Package physics cube demo macOS app
+        shell: bash
+        run: STRICT=1 TARGETS=macos-app PROJECT=projects/physics-cube-demo bash scripts/package-nexus-project.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusengine-physics-cube-demo-macos-app
+          path: |
+            dist/packager/artifacts/macos-app/
+            dist/packager/packages/*/nexus-package-manifest.json
+
+  package-physics-cube-demo-electron-mac:
+    name: Package Physics Cube Demo Electron macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Package physics cube demo Electron macOS
+        shell: bash
+        run: STRICT=1 TARGETS=electron-mac PROJECT=projects/physics-cube-demo bash scripts/package-nexus-project.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusengine-physics-cube-demo-electron-mac
+          path: |
+            dist/packager/artifacts/electron-mac/
             dist/packager/packages/*/nexus-package-manifest.json
 
   package-macos-web-app:
@@ -265,6 +385,12 @@ jobs:
       - macos-app
       - build-apk
       - package-web-static
+      - package-default-rust-project-web-static
+      - package-default-rust-project-macos-app
+      - package-default-rust-project-electron-mac
+      - package-physics-cube-demo-web-static
+      - package-physics-cube-demo-macos-app
+      - package-physics-cube-demo-electron-mac
       - package-macos-web-app
       - package-android-webview
       - package-ios-simulator
