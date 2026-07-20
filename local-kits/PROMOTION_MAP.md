@@ -24,6 +24,7 @@ NexusRealtime-Rust crates
 |---|---|---|---|
 | `host-kernel-domain-kit` | NexusRealtime host-kernel contract | `crates/nexus-host` | Central composer; should orchestrate domains and never own gameplay rules. |
 | `project-bundle-domain-kit` | NexusRealtime project bundle contract | `crates/nexus-project-loader` | Owns project bundle validation/loading. |
+| `project-compiler-domain-kit` | NexusRealtime core project compiler contract | `crates/nexus-project-compiler` | Parses HTML and JavaScript into versioned project IR; Builder retains filesystem, Cargo, and artifact ownership. |
 | `adaptive-host-profile-domain-kit` | NexusRealtime adaptive host profile contract | `crates/nexus-adaptive-host` | Owns profile selection and capability negotiation. |
 | `command-buffer-domain-kit` | NexusRealtime command buffer contract | `crates/nexus-command-buffer` | Owns host-facing presentation command schema. |
 | `input-routing-domain-kit` | NexusRealtime host input contract | `crates/nexus-host` plus input adapters | Routes host input toward core commands/events. |

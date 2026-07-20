@@ -48,6 +48,9 @@ for raw_target in "${TARGET_ARRAY[@]}"; do
   case "${target}" in
     ""|web-static)
       ;;
+    native-rust-headless)
+      run_optional native-rust-headless node scripts/compile-nexus-project.mjs "${PROJECT}" "${OUT_ROOT}"
+      ;;
     macos-app)
       if [ "$(uname -s)" = "Darwin" ]; then
         run_optional macos-app bash scripts/package-macos-web-app.sh "${PACKAGE_DIR}" "${OUT_ROOT}"

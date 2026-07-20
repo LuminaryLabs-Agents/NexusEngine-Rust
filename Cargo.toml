@@ -9,6 +9,7 @@ members = [
   "crates/nexus-adaptive-host",
   "crates/nexus-webxr-adapter",
   "crates/nexus-project-loader",
+  "crates/nexus-project-compiler",
   "crates/nexus-asset-pack",
   "crates/nexus-xr-input",
   "crates/nexus-xr-interaction",

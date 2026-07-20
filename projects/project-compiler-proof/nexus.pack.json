@@ -1,0 +1,7 @@
+{
+  "name": "Project Compiler Proof",
+  "appId": "dev.luminarylabs.nexus.projectcompilerproof",
+  "entry": "index.html",
+  "kind": "nexus-project",
+  "targets": ["web-static", "native-rust-headless"]
+}

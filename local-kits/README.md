@@ -33,6 +33,7 @@ No platform domain owns gameplay truth.
 |---|---|---|
 | `host-kernel-domain-kit` | Native host kernel | Composes project loading, profile selection, input routing, command buffers, diagnostics, and platform host domains. |
 | `project-bundle-domain-kit` | Project loading | Owns project bundle validation/loading contracts. |
+| `project-compiler-domain-kit` | Project compilation | Parses HTML and JavaScript project semantics into versioned project IR and target plans without owning Cargo or packaging. |
 | `adaptive-host-profile-domain-kit` | Host profiles | Owns platform capability selection and profile validation. |
 | `input-routing-domain-kit` | Host input routing | Normalizes host input and routes it toward Nexus commands/events. |
 | `command-buffer-domain-kit` | Command output | Owns the host-facing presentation command contract. |
@@ -55,6 +56,7 @@ No platform domain owns gameplay truth.
 local-kits/
 ├─ README.md
 ├─ native-host-domain-kits.mjs
+├─ project-compiler-domain-kit.mjs
 ├─ primitive-cube-object-kit.mjs
 ├─ physics-cube-object-kit.mjs
 ├─ quest-xr-frame-loop-kit.mjs
@@ -62,6 +64,7 @@ local-kits/
 │  └─ native-host-composition.mjs
 └─ tests/
    ├─ native-host-domain-kits.test.mjs
+   ├─ project-compiler-domain-kit.test.mjs
    ├─ primitive-cube-object-kit.test.mjs
    ├─ physics-cube-object-kit.test.mjs
    └─ quest-xr-frame-loop-kit.test.mjs
@@ -71,6 +74,7 @@ local-kits/
 
 ```bash
 node local-kits/tests/native-host-domain-kits.test.mjs
+node local-kits/tests/project-compiler-domain-kit.test.mjs
 node local-kits/tests/primitive-cube-object-kit.test.mjs
 node local-kits/tests/physics-cube-object-kit.test.mjs
 node local-kits/tests/quest-xr-frame-loop-kit.test.mjs
@@ -81,6 +85,14 @@ node local-kits/tests/quest-xr-frame-loop-kit.test.mjs
 ```bash
 node local-kits/examples/native-host-composition.mjs
 ```
+
+## Run the project compiler proof
+
+```bash
+make package-project-compiler-proof
+```
+
+This preserves the HTML/JavaScript web target and emits a host-native Rust headless artifact from the same project source.
 
 ## Promotion path
 

@@ -1,4 +1,4 @@
-.PHONY: test apk quest-apk adb-quest-check macos-app host-ffi downloads-page package-nexus package-goldrush package-default-rust-project validate-default-rust-project package-physics-cube-demo validate-physics-cube-demo package-downloads
+.PHONY: test apk quest-apk adb-quest-check macos-app host-ffi downloads-page package-nexus package-goldrush package-default-rust-project validate-default-rust-project package-physics-cube-demo validate-physics-cube-demo package-project-compiler-proof package-downloads
 
 test:
 	cargo test --workspace
@@ -6,6 +6,7 @@ test:
 	node local-kits/tests/primitive-cube-object-kit.test.mjs
 	node local-kits/tests/physics-cube-object-kit.test.mjs
 	node local-kits/tests/quest-xr-frame-loop-kit.test.mjs
+	node local-kits/tests/project-compiler-domain-kit.test.mjs
 
 apk:
 	bash scripts/build-apk.sh
@@ -44,6 +45,9 @@ package-physics-cube-demo:
 validate-physics-cube-demo: package-physics-cube-demo
 	NEXUS_VALIDATE_MIN_FRAME=12 node scripts/validate-electron-package.mjs dist/packager/work/physics-cube-demo/electron-host
 	EXPECTED_KIT_HASHES=kits/primitive-cube-object-kit.mjs,kits/physics-cube-object-kit.mjs bash scripts/validate-macos-web-app.sh dist/packager/artifacts/macos-app/PhysicsCubeDemo.app
+
+package-project-compiler-proof:
+	STRICT=1 TARGETS=web-static,native-rust-headless PROJECT=projects/project-compiler-proof bash scripts/package-nexus-project.sh
 
 package-downloads:
 	bash scripts/package-downloads.sh
